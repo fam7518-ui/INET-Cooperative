@@ -63,6 +63,14 @@
             >
               รับของแล้ว
             </button>
+
+            <button
+              @click="deleteParcel(parcel.id)"
+              style="padding: 5px 10px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;"
+            >
+              ลบ
+            </button>
+            
           </td>
         </tr>
         <tr v-if="filteredParcels.length === 0">
@@ -134,6 +142,24 @@ const updateStatus = async (targetParcel) => {
     }
   } catch (error) {
     alert('อัปเดตสถานะไม่สำเร็จ')
+  }
+}
+
+// 4. ฟังก์ชันลบพัสดุ (DELETE) พร้อมระบบยืนยัน
+const deleteParcel = async (id) => {
+  // แจ้งเตือนให้กดยืนยันก่อนลบ ป้องกันการกดผิด
+  if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการพัสดุนี้?')) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/parcels/${id}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        fetchParcels() // โหลดตารางใหม่ให้รายการหายไป
+      }
+    } catch (error) {
+      alert('ลบพัสดุไม่สำเร็จ')
+    }
   }
 }
 

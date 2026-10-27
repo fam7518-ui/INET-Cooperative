@@ -37,9 +37,10 @@ func main() {
 	app.Use(cors.New())
 
 	// 3. เส้น API (Routes)
-	app.Get("/api/parcels", getParcels)       // ดึงพัสดุทั้งหมด
-	app.Post("/api/parcels", addParcel)       // เพิ่มพัสดุใหม่
-	app.Put("/api/parcels/:id", updateStatus) // เปลี่ยนสถานะเป็นรับแล้ว
+	app.Get("/api/parcels", getParcels)          // ดึงพัสดุทั้งหมด
+	app.Post("/api/parcels", addParcel)          // เพิ่มพัสดุใหม่
+	app.Put("/api/parcels/:id", updateStatus)    // เปลี่ยนสถานะเป็นรับแล้ว
+	app.Delete("/api/parcels/:id", deleteParcel) // ลบพัสดุ
 
 	fmt.Println("🚀 Backend Go Fiber รันอยู่ที่ http://localhost:3000")
 	log.Fatal(app.Listen(":3000"))
@@ -95,4 +96,16 @@ func updateStatus(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"message": "อัปเดตสถานะเรียบร้อย"})
+}
+
+// Handler 4: ลบข้อมูลพัสดุ
+func deleteParcel(c *fiber.Ctx) error {
+	id := c.Params("id")
+	query := "DELETE FROM parcels WHERE id = ?"
+	_, err := db.Exec(query, id)
+	if err != nil {
+		return c.Status(500).SendString(err.Error())
+	}
+
+	return c.JSON(fiber.Map{"message": "ลบพัสดุเรียบร้อยแล้ว"})
 }
